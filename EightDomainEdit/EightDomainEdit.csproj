@@ -46,6 +46,11 @@
       <HintPath>Library\FISCA.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="FISCA.Permission, Version=1.2.0.2, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Library\FISCA.Permission.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="FISCA.Presentation, Version=1.1.0.21, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Library\FISCA.Presentation.dll</HintPath>
@@ -74,6 +79,7 @@
     <Compile Include="DomainForm.Designer.cs">
       <DependentUpon>DomainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Permissions.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SchoolXmlParse.cs">
@@ -89,6 +95,9 @@
     <Content Include="Library\DevComponents.DotNetBar2.dll" />
     <Content Include="Library\DevComponents.DotNetBar2.xml" />
     <Content Include="Library\FISCA.dll" />
+    <Content Include="Library\FISCA.Permission.dll" />
+    <Content Include="Library\FISCA.Permission.pdb" />
+    <Content Include="Library\FISCA.Permission.xml" />
     <Content Include="Library\FISCA.Presentation.dll" />
     <Content Include="Library\FISCA.Presentation.pdb" />
     <Content Include="Library\FISCA.Presentation.XML" />

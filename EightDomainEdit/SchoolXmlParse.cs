@@ -19,15 +19,22 @@ namespace Z_EightDomainEdit
         {
             InitializeComponent();
 
-            XElement xml1 = new XElement(XElement.Parse("" + row.Cells[3].Value));
-            XmlDocument doc = new XmlDocument();
-            doc.LoadXml(xml1.ToString());
-            ConvertXmlNodeToTreeNode(doc, treeXml1.Nodes);
+            try
+            {
+                XElement xml1 = new XElement(XElement.Parse("" + row.Cells[3].Value));
+                XmlDocument doc = new XmlDocument();
+                doc.LoadXml(xml1.ToString());
+                ConvertXmlNodeToTreeNode(doc, treeXml1.Nodes);
 
-            XElement xml2 = new XElement(XElement.Parse("" + row.Cells[4].Value));
-            XmlDocument doc2 = new XmlDocument();
-            doc2.LoadXml(xml2.ToString());
-            ConvertXmlNodeToTreeNode(doc2, treeXml2.Nodes);
+                XElement xml2 = new XElement(XElement.Parse("" + row.Cells[4].Value));
+                XmlDocument doc2 = new XmlDocument();
+                doc2.LoadXml(xml2.ToString());
+                ConvertXmlNodeToTreeNode(doc2, treeXml2.Nodes);
+            }
+            catch (Exception ex)
+            {
+                MsgBox.Show(ex.Message);
+            }
 
 
         }
@@ -93,7 +100,7 @@ namespace Z_EightDomainEdit
                 case XmlNodeType.CDATA:
                     {
                         {
-                            if (xmlNode.Value.Length > 50)
+                            if (xmlNode.Value.Length > 200)
                             {
                                 XElement xml2 = new XElement(XElement.Parse(xmlNode.Value));
                                 XmlDocument doc2 = new XmlDocument();

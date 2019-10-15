@@ -151,97 +151,103 @@ namespace Z_EightDomainEdit
                 foreach (XElement each in rsps_2)
                 {
                     //取得Record -> Column
-                    List<XElement> a = each.Element("Record").Elements("Column").ToList();
-                    string UID = each.Attribute("UID").Value;
-
-                    XElement xml = a[2];
-
-
-                    //先將String 轉 Xml
-                    XElement Configuration = XElement.Parse(xml.Value);
-
-                    //取得DomainOrdinal
-
-                    XElement DomainOrdinal = Configuration.Elements("Configuration").ToList()[1];
-                    //先將String 轉 Xml
-                    XElement xml2 = XElement.Parse(DomainOrdinal.Value);
-
-                    /*
-                   * 條件:
-                   * 1.確認是否有自然科學
-                   * 2.社會之後,增加自然科學
-
-                   * 1.確認有沒有藝術
-                   * 2.自然與生活科技之後,增加藝術
-                    */
-
-                    bool checkPoint1 = false;
-                    bool checkPoint2 = false;
-                    foreach (XElement domain in xml2.Elements("Domain").ToList())
+                    if (each.Element("Record") != null)
                     {
-                        var name = domain.Attribute("Name");
-                        if (name.Value == "自然科學")
+                        if (each.Element("Record").Elements("Column") != null)
                         {
-                            checkPoint1 = true;
-                        }
+                            List<XElement> a = each.Element("Record").Elements("Column").ToList();
+                            string UID = each.Attribute("UID").Value;
 
-                        if (name.Value == "藝術")
-                        {
-                            checkPoint2 = true;
-                        }
-                    }
+                            XElement xml = a[2];
 
-                    //Add自然科學
-                    if (!checkPoint1)
-                    {
-                        foreach (XElement domain in xml2.Elements("Domain").ToList())
-                        {
-                            var name = domain.Attribute("Name");
-                            if (name.Value == "社會")
+
+                            //先將String 轉 Xml
+                            XElement Configuration = XElement.Parse(xml.Value);
+
+                            //取得DomainOrdinal
+
+                            XElement DomainOrdinal = Configuration.Elements("Configuration").ToList()[1];
+                            //先將String 轉 Xml
+                            XElement xml2 = XElement.Parse(DomainOrdinal.Value);
+
+                            /*
+                           * 條件:
+                           * 1.確認是否有自然科學
+                           * 2.社會之後,增加自然科學
+
+                           * 1.確認有沒有藝術
+                           * 2.自然與生活科技之後,增加藝術
+                            */
+
+                            bool checkPoint1 = false;
+                            bool checkPoint2 = false;
+                            foreach (XElement domain in xml2.Elements("Domain").ToList())
                             {
-                                var new1 = new XElement("Domain");
-                                new1.SetAttributeValue("Group", "");
-                                new1.SetAttributeValue("Name", "自然科學");
-                                new1.SetAttributeValue("EnglishName", "Natural Science");
+                                var name = domain.Attribute("Name");
+                                if (name.Value == "自然科學")
+                                {
+                                    checkPoint1 = true;
+                                }
 
-                                domain.AddAfterSelf(new1);
+                                if (name.Value == "藝術")
+                                {
+                                    checkPoint2 = true;
+                                }
                             }
-                        }
-                    }
 
-                    //Add藝術
-                    if (!checkPoint2)
-                    {
-                        foreach (XElement domain in xml2.Elements("Domain").ToList())
-                        {
-                            var name = domain.Attribute("Name");
-                            if (name.Value == "自然與生活科技")
+                            //Add自然科學
+                            if (!checkPoint1)
                             {
-                                var new1 = new XElement("Domain");
-                                new1.SetAttributeValue("Group", "");
-                                new1.SetAttributeValue("Name", "藝術");
-                                new1.SetAttributeValue("EnglishName", "Art");
+                                foreach (XElement domain in xml2.Elements("Domain").ToList())
+                                {
+                                    var name = domain.Attribute("Name");
+                                    if (name.Value == "社會")
+                                    {
+                                        var new1 = new XElement("Domain");
+                                        new1.SetAttributeValue("Group", "");
+                                        new1.SetAttributeValue("Name", "自然科學");
+                                        new1.SetAttributeValue("EnglishName", "Natural Science");
 
-                                domain.AddAfterSelf(new1);
+                                        domain.AddAfterSelf(new1);
+                                    }
+                                }
                             }
+
+                            //Add藝術
+                            if (!checkPoint2)
+                            {
+                                foreach (XElement domain in xml2.Elements("Domain").ToList())
+                                {
+                                    var name = domain.Attribute("Name");
+                                    if (name.Value == "自然與生活科技")
+                                    {
+                                        var new1 = new XElement("Domain");
+                                        new1.SetAttributeValue("Group", "");
+                                        new1.SetAttributeValue("Name", "藝術");
+                                        new1.SetAttributeValue("EnglishName", "Arts");
+
+                                        domain.AddAfterSelf(new1);
+                                    }
+                                }
+                            }
+
+                            //儲存回去
+                            DomainOrdinal.SetValue(xml2.ToString(SaveOptions.DisableFormatting));
+
+                            string SchoolName = SchoolPanel.GlobalSchoolCache[UID].Title;
+                            string SchoolDSNS = "" + SchoolPanel.GlobalSchoolCache[UID].DSNS;
+
+                            DataGridViewRow row = new DataGridViewRow();
+                            row.CreateCells(dataGridViewX1);
+                            row.Cells[0].Value = UID;
+                            row.Cells[1].Value = SchoolDSNS;
+                            row.Cells[2].Value = SchoolName;
+                            row.Cells[3].Value = xml.Value;
+                            row.Cells[4].Value = Configuration.ToString(SaveOptions.DisableFormatting);
+
+                            dataGridViewX1.Rows.Add(row);
                         }
                     }
-
-                    //儲存回去
-                    DomainOrdinal.SetValue(xml2.ToString(SaveOptions.DisableFormatting));
-
-                    string SchoolName = SchoolPanel.GlobalSchoolCache[UID].Title;
-                    string SchoolDSNS = "" + SchoolPanel.GlobalSchoolCache[UID].DSNS;
-
-                    DataGridViewRow row = new DataGridViewRow();
-                    row.CreateCells(dataGridViewX1);
-                    row.Cells[0].Value = UID;
-                    row.Cells[1].Value = SchoolDSNS;
-                    row.Cells[2].Value = SchoolName;
-                    row.Cells[3].Value = xml.Value;
-                    row.Cells[4].Value = Configuration.ToString(SaveOptions.DisableFormatting);
-
-                    dataGridViewX1.Rows.Add(row);
                 }
             }
         }
@@ -279,180 +285,184 @@ namespace Z_EightDomainEdit
 
                 foreach (XElement each in rsps_2)
                 {
-                    //取得Record -> Column
-                    List<XElement> a = each.Element("Record").Elements("Column").ToList();
-                    string UID = each.Attribute("UID").Value;
-
-                    XElement xml = a[2];
-
-                    //先將String 轉 Xml
-                    XElement Configuration = XElement.Parse(xml.Value);
-
-                    //取得DomainOrdinal
-
-                    XElement DomainOrdinal = Configuration.Elements("Configuration").ToList()[1];
-                    //先將String 轉 Xml
-                    XElement xml2 = XElement.Parse(DomainOrdinal.Value);
-
-                    /*
-    <Domains>
-        <Domain Group="語文" Name="國語文" EnglishName="ChineseMM"/>
-        <Domain Group="語文" Name="英語" EnglishName="English"/>
-        <Domain Group="" Name="數學" EnglishName="Mathematics"/>
-        <Domain Group="" Name="社會" EnglishName="Social Studies"/>
-        new  <Domain Group="" Name="自然科學" EnglishName="Natural Science"/>
-        <Domain Group="" Name="自然與生活科技" EnglishName="Science And Technology"/>
-        new  <Domain Group="" Name="藝術" EnglishName="Art"/>
-        <Domain Group="" Name="藝術與人文" EnglishName="Arts And Humanities"/>
-        <Domain Group="" Name="健康與體育" EnglishName="Health And Physical Education"/>
-        <Domain Group="" Name="綜合活動" EnglishName="Integrative Activities"/>
-        new   <Domain Group="" Name="科技" EnglishName="Social Studies"/>
-        <Domain Group="" Name="實用語文" EnglishName="P Test"/>
-        <Domain Group="" Name="實用數學" EnglishName="M Test"/>
-        <Domain Group="" Name="社會適應" EnglishName=""/>
-        <Domain Group="" Name="生活教育" EnglishName=""/>
-        <Domain Group="" Name="休閒教育" EnglishName=""/>
-        <Domain Group="" Name="職業教育" EnglishName=""/>
-        <Domain Group="" Name="特殊需求" EnglishName=""/>
-    </Domains>
-                    */
-
-                    /*
-                   * 條件:
-                   * 1.確認是否有自然科學
-                   * 2.社會之後,增加自然科學
-
-                   * 1.確認有沒有藝術
-                   * 2.自然與生活科技之後,增加藝術
-
-                   * 1.確認是否有科技
-                   * 2.將原本科技保留移出
-                   * 3.並於綜合活動之後增加科技
-                    */
-
-                    bool checkPoint1 = false;
-                    bool checkPoint2 = false;
-                    bool checkPoint3 = false;
-                    foreach (XElement domain in xml2.Elements("Domain").ToList())
+                    if (each.Element("Record") != null)
                     {
-                        var name = domain.Attribute("Name");
-                        if (name.Value == "自然科學")
+                        if (each.Element("Record").Elements("Column") != null)
                         {
-                            checkPoint1 = true;
-                        }
+                            //取得Record -> Column
+                            List<XElement> a = each.Element("Record").Elements("Column").ToList();
+                            string UID = each.Attribute("UID").Value;
 
-                        if (name.Value == "藝術")
-                        {
-                            checkPoint2 = true;
-                        }
+                            XElement xml = a[2];
 
-                        if (name.Value == "科技")
-                        {
-                            checkPoint3 = true;
+                            //先將String 轉 Xml
+                            XElement Configuration = XElement.Parse(xml.Value);
+
+                            //取得DomainOrdinal
+
+                            XElement DomainOrdinal = Configuration.Elements("Configuration").ToList()[1];
+                            //先將String 轉 Xml
+                            XElement xml2 = XElement.Parse(DomainOrdinal.Value);
+
+                            /*
+            <Domains>
+                <Domain Group="語文" Name="國語文" EnglishName="ChineseMM"/>
+                <Domain Group="語文" Name="英語" EnglishName="English"/>
+                <Domain Group="" Name="數學" EnglishName="Mathematics"/>
+                <Domain Group="" Name="社會" EnglishName="Social Studies"/>
+                new  <Domain Group="" Name="自然科學" EnglishName="Natural Science"/>
+                <Domain Group="" Name="自然與生活科技" EnglishName="Science And Technology"/>
+                new  <Domain Group="" Name="藝術" EnglishName="Art"/>
+                <Domain Group="" Name="藝術與人文" EnglishName="Arts And Humanities"/>
+                <Domain Group="" Name="健康與體育" EnglishName="Health And Physical Education"/>
+                <Domain Group="" Name="綜合活動" EnglishName="Integrative Activities"/>
+                new   <Domain Group="" Name="科技" EnglishName="Social Studies"/>
+                <Domain Group="" Name="實用語文" EnglishName="P Test"/>
+                <Domain Group="" Name="實用數學" EnglishName="M Test"/>
+                <Domain Group="" Name="社會適應" EnglishName=""/>
+                <Domain Group="" Name="生活教育" EnglishName=""/>
+                <Domain Group="" Name="休閒教育" EnglishName=""/>
+                <Domain Group="" Name="職業教育" EnglishName=""/>
+                <Domain Group="" Name="特殊需求" EnglishName=""/>
+            </Domains>
+                            */
+
+                            /*
+                           * 條件:
+                           * 1.確認是否有自然科學
+                           * 2.社會之後,增加自然科學
+
+                           * 1.確認有沒有藝術
+                           * 2.自然與生活科技之後,增加藝術
+
+                           * 1.確認是否有科技
+                           * 2.將原本科技保留移出
+                           * 3.並於綜合活動之後增加科技
+                            */
+
+                            bool checkPoint1 = false;
+                            bool checkPoint2 = false;
+                            bool checkPoint3 = false;
+                            foreach (XElement domain in xml2.Elements("Domain").ToList())
+                            {
+                                var name = domain.Attribute("Name");
+                                if (name.Value == "自然科學")
+                                {
+                                    checkPoint1 = true;
+                                }
+
+                                if (name.Value == "藝術")
+                                {
+                                    checkPoint2 = true;
+                                }
+
+                                if (name.Value == "科技")
+                                {
+                                    checkPoint3 = true;
+                                }
+                            }
+
+                            //Add自然科學
+                            if (!checkPoint1)
+                            {
+                                foreach (XElement domain in xml2.Elements("Domain").ToList())
+                                {
+                                    var name = domain.Attribute("Name");
+                                    if (name.Value == "社會")
+                                    {
+                                        var new1 = new XElement("Domain");
+                                        new1.SetAttributeValue("Group", "");
+                                        new1.SetAttributeValue("Name", "自然科學");
+                                        new1.SetAttributeValue("EnglishName", "Natural Science");
+
+                                        domain.AddAfterSelf(new1);
+                                    }
+                                }
+                            }
+
+                            //Add藝術
+                            if (!checkPoint2)
+                            {
+                                foreach (XElement domain in xml2.Elements("Domain").ToList())
+                                {
+                                    var name = domain.Attribute("Name");
+                                    if (name.Value == "自然與生活科技")
+                                    {
+                                        var new1 = new XElement("Domain");
+                                        new1.SetAttributeValue("Group", "");
+                                        new1.SetAttributeValue("Name", "藝術");
+                                        new1.SetAttributeValue("EnglishName", "Arts");
+
+                                        domain.AddAfterSelf(new1);
+                                    }
+                                }
+                            }
+
+                            //如果沒有科技
+                            if (!checkPoint3)
+                            {
+                                foreach (XElement domain in xml2.Elements("Domain").ToList())
+                                {
+                                    var name = domain.Attribute("Name");
+                                    if (name.Value == "綜合活動")
+                                    {
+                                        var new1 = new XElement("Domain");
+                                        new1.SetAttributeValue("Group", "");
+                                        new1.SetAttributeValue("Name", "科技");
+                                        new1.SetAttributeValue("EnglishName", "Technology");
+
+                                        domain.AddAfterSelf(new1);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                //有科技的處理
+                                //1.將原本科技予以移除,並保存
+                                //2.將科技放置於綜合活動之下
+                                foreach (XElement domain in xml2.Elements("Domain").ToList())
+                                {
+                                    var name = domain.Attribute("Name");
+                                    if (name.Value == "科技")
+                                    {
+                                        domain.Remove();
+                                    }
+                                }
+
+                                //加入科技
+                                foreach (XElement domain in xml2.Elements("Domain").ToList())
+                                {
+                                    var name = domain.Attribute("Name");
+                                    if (name.Value == "綜合活動")
+                                    {
+                                        var new1 = new XElement("Domain");
+                                        new1.SetAttributeValue("Group", "");
+                                        new1.SetAttributeValue("Name", "科技");
+                                        new1.SetAttributeValue("EnglishName", "Technology");
+
+                                        domain.AddAfterSelf(new1);
+                                    }
+                                }
+                            }
+
+                            //儲存回去
+                            DomainOrdinal.SetValue(xml2.ToString(SaveOptions.DisableFormatting));
+
+
+                            string SchoolName = SchoolPanel.GlobalSchoolCache[UID].Title;
+                            string SchoolDSNS = "" + SchoolPanel.GlobalSchoolCache[UID].DSNS;
+
+                            DataGridViewRow row = new DataGridViewRow();
+                            row.CreateCells(dataGridViewX1);
+                            row.Cells[0].Value = UID;
+                            row.Cells[1].Value = SchoolDSNS;
+                            row.Cells[2].Value = SchoolName;
+                            row.Cells[3].Value = xml.Value;
+                            row.Cells[4].Value = Configuration.ToString(SaveOptions.DisableFormatting);
+
+                            dataGridViewX1.Rows.Add(row);
                         }
                     }
-
-                    //Add自然科學
-                    if (!checkPoint1)
-                    {
-                        foreach (XElement domain in xml2.Elements("Domain").ToList())
-                        {
-                            var name = domain.Attribute("Name");
-                            if (name.Value == "社會")
-                            {
-                                var new1 = new XElement("Domain");
-                                new1.SetAttributeValue("Group", "");
-                                new1.SetAttributeValue("Name", "自然科學");
-                                new1.SetAttributeValue("EnglishName", "Physical sciences");
-
-                                domain.AddAfterSelf(new1);
-                            }
-                        }
-                    }
-
-                    //Add藝術
-                    if (!checkPoint2)
-                    {
-                        foreach (XElement domain in xml2.Elements("Domain").ToList())
-                        {
-                            var name = domain.Attribute("Name");
-                            if (name.Value == "自然與生活科技")
-                            {
-                                var new1 = new XElement("Domain");
-                                new1.SetAttributeValue("Group", "");
-                                new1.SetAttributeValue("Name", "藝術");
-                                new1.SetAttributeValue("EnglishName", "Arts");
-
-                                domain.AddAfterSelf(new1);
-                            }
-                        }
-                    }
-
-                    //如果沒有科技
-                    if (!checkPoint3)
-                    {
-                        foreach (XElement domain in xml2.Elements("Domain").ToList())
-                        {
-                            var name = domain.Attribute("Name");
-                            if (name.Value == "綜合活動")
-                            {
-                                var new1 = new XElement("Domain");
-                                new1.SetAttributeValue("Group", "");
-                                new1.SetAttributeValue("Name", "科技");
-                                new1.SetAttributeValue("EnglishName", "Technology");
-
-                                domain.AddAfterSelf(new1);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        //有科技的處理
-                        //1.將原本科技予以移除,並保存
-                        //2.將科技放置於綜合活動之下
-
-                        XElement backup_domain = null;
-                        foreach (XElement domain in xml2.Elements("Domain").ToList())
-                        {
-                            var name = domain.Attribute("Name");
-                            if (name.Value == "科技")
-                            {
-                                domain.Remove();
-                            }
-                        }
-
-                        //加入科技
-                        foreach (XElement domain in xml2.Elements("Domain").ToList())
-                        {
-                            var name = domain.Attribute("Name");
-                            if (name.Value == "綜合活動")
-                            {
-                                var new1 = new XElement("Domain");
-                                new1.SetAttributeValue("Group", "");
-                                new1.SetAttributeValue("Name", "科技");
-                                new1.SetAttributeValue("EnglishName", "Technology");
-
-                                domain.AddAfterSelf(new1);
-                            }
-                        }
-                    }
-
-                    //儲存回去
-                    DomainOrdinal.SetValue(xml2.ToString(SaveOptions.DisableFormatting));
-
-
-                    string SchoolName = SchoolPanel.GlobalSchoolCache[UID].Title;
-                    string SchoolDSNS = "" + SchoolPanel.GlobalSchoolCache[UID].DSNS;
-
-                    DataGridViewRow row = new DataGridViewRow();
-                    row.CreateCells(dataGridViewX1);
-                    row.Cells[0].Value = UID;
-                    row.Cells[1].Value = SchoolDSNS;
-                    row.Cells[2].Value = SchoolName;
-                    row.Cells[3].Value = xml.Value;
-                    row.Cells[4].Value = Configuration.ToString(SaveOptions.DisableFormatting);
-
-                    dataGridViewX1.Rows.Add(row);
                 }
             }
         }

@@ -1,4 +1,5 @@
 ﻿using FISCA;
+using FISCA.Permission;
 using FISCA.Presentation;
 using iCampusManager;
 using System;
@@ -24,7 +25,7 @@ namespace Z_EightDomainEdit
 
             SchoolPanel.SetSchoolPanel.SelectedSourceChanged += delegate
             {
-                if (SchoolPanel.SetSchoolPanel.SelectedSource.Count > 0)
+                if (SchoolPanel.SetSchoolPanel.SelectedSource.Count > 0 && Permissions.領域資料管理權限)
                 {
                     item["領域資料管理"].Enable = true;
                 }
@@ -33,6 +34,9 @@ namespace Z_EightDomainEdit
                     item["領域資料管理"].Enable = false;
                 }
             };
+
+            Catalog iCampusManager01 = RoleAclSource.Instance["學校"]["外掛"];
+            iCampusManager01.Add(new RibbonFeature(Permissions.領域資料管理, "領域資料管理"));
         }
     }
 }

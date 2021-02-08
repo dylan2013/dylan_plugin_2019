@@ -35,6 +35,7 @@
     <Reference Include="Aspose.Cells">
       <HintPath>..\..\..\ischool\ischool_DEV\modules\Campus\Aspose.Cells.dll</HintPath>
     </Reference>
+    <Reference Include="DevComponents.DotNetBar2, Version=9.5.0.1, Culture=neutral, PublicKeyToken=7eb7c3a35b91de04, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
